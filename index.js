@@ -1,21 +1,28 @@
 #!/usr/bin/env node
 
 const fs = require("fs")
+    , os = require("os")
     , unifi = require("node-unifi")
     , accessDevice = require("node-unifi-settings").accessDevice;
 
-
+const confPaths = [ "config.json", `${os.homedir()}/.unificli.json`, "/etc/unificli/config.json" ]
+var filen;
+for(key in confPaths) {
+    if (fs.existsSync(confPaths[key])) {
+        filen = confPaths[key];
+        break;
+    }
+}
+if (filen === undefined) {
+    console.log("Could not find a configuration file");
+    return;
+}
 try {
-    var config = JSON.parse(fs.readFileSync("config.json", "utf-8"));
+    var config = JSON.parse(fs.readFileSync(filen, "utf-8"));
 }
 catch (err) {
-    if (err.code = 'ENOENT') {
-        console.log(err);
-        console.log('config.json');
-        return;
-    } else {
-        throw err;
-    }
+    console.log(`Can't access or parse 'config.json'`);
+    return;
 }
 
 const actions = {
