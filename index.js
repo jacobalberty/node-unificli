@@ -6,6 +6,7 @@ const fs = require("fs")
     , accessDevice = require("node-unifi-settings").accessDevice;
 
 const actions = {
+    setup: require("./setup"),
     poe: {
         login: true,
         func: setPoeMode
