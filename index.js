@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const fs = require("fs")
     , unifi = require("node-unifi")
     , accessDevice = require("node-unifi-settings").accessDevice;
