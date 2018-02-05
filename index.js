@@ -2,15 +2,11 @@
 
 const fs = require("fs")
     , os = require("os")
-    , unifi = require("node-unifi")
-    , accessDevice = require("node-unifi-settings").accessDevice;
+    , unifi = require("node-unifi");
 
 const actions = {
     setup: require("./setup"),
-    poe: {
-        login: true,
-        func: setPoeMode
-    }
+    poe: require("./poe_mode")
 }
 
 var called = process.argv.splice(0, process.execArgv.length + 2).join(' ');
@@ -51,31 +47,8 @@ var controller = new unifi.Controller(config.addr, config.port);
 controller.login(config.username, config.password, function(error) {
     if (error)
         throw error;
+    if(actions[action].deps !== undefined) {
+        Object.assign(actions[action].deps, { config: config, controller: controller });
+    }
     actions[action].func(called, process.argv);
 });
-
-function updateAccessDevice(controller, sites, accessDevice) {
-    var changes = accessDevice.getChanges();
-    if (Object.keys(changes).length > 0) {
-        controller.setDeviceSettingsBase(sites, accessDevice.id, changes);
-    }
-}
-
-function setPoeMode(called, args) {
-    if (args.length !== 3) {
-        console.log (`usage: ${called} poe <switch mac> <switch port> <poe mode>`);
-        return;
-    }
-    var mac = args[0];
-    var port = args[1];
-    var mode = args[2];
-    controller.getAccessDevices('default', function(error, data) {
-        if (error)
-            throw error;
-        var ad = new accessDevice(data);
-        var portObj = ad.ports(port)
-        portObj.poe_mode = mode;
-
-        updateAccessDevice(controller, config.site, ad);
-    }, mac);
-}
