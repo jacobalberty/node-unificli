@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/jacobalberty/node-unificli#readme",
   "dependencies": {
+    "async": "^2.6.0",
     "node-unifi": "git+https://github.com/jens-maus/node-unifi.git",
     "node-unifi-settings": "git+https://github.com/jacobalberty/node-unifi-settings.git"
   }
