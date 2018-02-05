@@ -5,6 +5,26 @@ const fs = require("fs")
     , unifi = require("node-unifi")
     , accessDevice = require("node-unifi-settings").accessDevice;
 
+const actions = {
+    poe: {
+        login: true,
+        func: setPoeMode
+    }
+}
+
+var called = process.argv.splice(0, process.execArgv.length + 2).join(' ');
+var action = process.argv.splice(0, 1)[0];
+
+if (actions[action] === undefined) {
+    console.log(`Supported actions: ${Object.keys(actions).join(', ')}`);
+    return;
+}
+
+if (actions[action].login !== true) {
+    actions[action].func(called, process.argv);
+    return;
+}
+
 const confPaths = [ "config.json", `${os.homedir()}/.unificli.json`, "/etc/unificli/config.json" ]
 var filen;
 for(key in confPaths) {
@@ -22,20 +42,6 @@ try {
 }
 catch (err) {
     console.log(`Can't access or parse 'config.json'`);
-    return;
-}
-
-const actions = {
-    poe: {
-        func: setPoeMode
-    }
-}
-
-var called = process.argv.splice(0, process.execArgv.length + 2).join(' ');
-var action = process.argv.splice(0, 1)[0];
-
-if (actions[action] === undefined) {
-    console.log(`Supported actions: ${Object.keys(actions).join(', ')}`);
     return;
 }
 
