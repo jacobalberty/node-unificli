@@ -53,9 +53,23 @@ function listAccessDevices(called, args) {
     var controller = deps.controller;
     var config = deps.config;
 
-    var type = args.type || 'all';
+    var type = 'all';
+    var coltype = type;
+    if (args.type) {
+        type = args.type;
+        switch(type) {
+            case 'usw':
+            case 'ugw':
+            case 'ugw,usw':
+            case 'usw,ugw':
+                coltype='ugw,usw';
+                break;
+        }
+    }
+    var filtype = type;
+
     var fcol = { };
-    Object.assign(fcol, columns._, columns[type])
+    Object.assign(fcol, columns._, columns[coltype])
 
     controller.getAccessDevices('default', function(error, data) {
         if (error)
@@ -64,8 +78,8 @@ function listAccessDevices(called, args) {
         var output = [ ];
         for(key in devices) {
             var dev = devices[key];
-            if (type !== 'all') {
-                var types = type.split(',');
+            if (filtype !== 'all') {
+                var types = filtype.split(',');
                 if (types.indexOf(dev.type) === -1)
                    continue;
             }
