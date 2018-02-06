@@ -54,7 +54,7 @@ function listAccessDevices(called, args) {
     var config = deps.config;
 
     var type = 'all';
-    var coltype = type;
+    var coltype;
     if (args.type) {
         type = args.type;
         switch(type) {
@@ -64,13 +64,15 @@ function listAccessDevices(called, args) {
             case 'usw,ugw':
                 coltype='ugw,usw';
                 break;
+        default:
+            coltype=type;
         }
     }
     var filtype = type;
 
     var fcol = { };
     Object.assign(fcol, columns._, columns[coltype])
-
+    console.log(coltype);
     controller.getAccessDevices('default', function(error, data) {
         if (error)
             throw error;
