@@ -67,7 +67,7 @@ function listAccessDevices(called, args) {
             var tmp = { };
             Object.keys(fcol).forEach(function(key, index) {
                 var value;
-                if (colfuncs[key] !== undefined) {
+                if (colfuncs[fcol[key]] !== undefined) {
                     value = colfuncs[fcol[key]](dev);
                 } else {
                     value = dev[fcol[key]];
