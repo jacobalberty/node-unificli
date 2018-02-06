@@ -5,9 +5,9 @@ const fs = require("fs")
     , unifi = require("node-unifi");
 
 const actions = {
-    device: require("./device"),
-    setup: require("./setup"),
-    poe: require("./poe_mode")
+    device: "./device",
+    setup: "./setup",
+    poe: "./poe_mode"
 }
 
 var called = process.argv.splice(0, process.execArgv.length + 2).slice(-1)[0];
@@ -17,6 +17,8 @@ var argv = require('minimist')(process.argv);
 if (actions[action] === undefined) {
     console.log(`Supported actions: ${Object.keys(actions).join(', ')}`);
     return;
+} else {
+    actions[action] = require(actions[action]);
 }
 
 if (actions[action].login !== true) {
