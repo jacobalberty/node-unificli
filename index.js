@@ -5,6 +5,7 @@ const fs = require("fs")
     , unifi = require("node-unifi");
 
 const actions = {
+    device: require("./device"),
     setup: require("./setup"),
     poe: require("./poe_mode")
 }
