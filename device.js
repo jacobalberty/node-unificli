@@ -4,29 +4,50 @@ const columnify = require('columnify')
 
 var deps = { };
 
+var colfuncs = {
+    uptime: function (dev) { return prettyMs(dev.uptime); },
+    channel: function (dev) {
+        var output = [ ];
+        if (dev.radio_table_stats) {
+            // Controller 5.7.x
+            for(key in dev.radio_table_stats) {
+                var radio = dev.radio_table_stats[key];
+                output.push(`${radio.channel} (${radio.radio})`);
+            }
+        } else {
+            // Works with controller 5.6.x
+            if (dev['ng-channel'])
+                output.push(`${dev['ng-channel']} (2.4ghz)`);
+            if (dev['na-channel'])
+                output.push(`${dev['na-channel']} (5ghz)`);
+        }
+        return output.join(', ');
+    }
+}
+
+var columns = {
+    _: {
+        name: 'name',
+        ip: 'ip',
+        mac: 'mac',
+        model: 'model',
+        version: 'version'
+    },
+    'ugw,usw': {
+    },
+    uap: {
+        clients: 'num_sta',
+        channel: 'channel',
+    },
+    all: {
+        uptime: 'uptime'
+    }
+}
+
 function setPoeMode(called, args) {
     var controller = deps.controller;
     var config = deps.config;
 
-    var columns = {
-        _: {
-            name: 'name',
-            ip: 'ip',
-            mac: 'mac',
-            model: 'model',
-            version: 'version'
-        },
-        'ugw,usw': {
-        },
-        uap: {
-            clients: { _: 'num_sta', type: 'ntar', ntar: 'radio_table_stats' },
-            channel: { _: 'channel', type: 'ntar', ntar: 'radio_table_stats' }
-
-        },
-        all: {
-            uptime: { _: 'uptime', type: 'duration' }
-        }
-    }
     var type = args.type || 'all';
     var fcol = { };
     Object.assign(fcol, columns._, columns[type])
@@ -45,15 +66,11 @@ function setPoeMode(called, args) {
             }
             var tmp = { };
             Object.keys(fcol).forEach(function(key, index) {
-                var value = dev[key];
-                switch(fcol[key].type) {
-                    case 'ntar':
-                        // TODO: Go through every entry in the array and join the values
-                        value = dev[fcol[key].ntar][0][fcol[key]._];
-                        break;
-                    case 'duration':
-                        value = prettyMs(value);
-                        break;
+                var value;
+                if (colfuncs[key] !== undefined) {
+                    value = colfuncs[fcol[key]](dev);
+                } else {
+                    value = dev[fcol[key]];
                 }
                 tmp[key] = value;
             });
@@ -68,5 +85,3 @@ module.exports = {
     func: setPoeMode,
     deps: deps
 }
-
-
