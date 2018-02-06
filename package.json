@@ -26,6 +26,7 @@
   "homepage": "https://github.com/jacobalberty/node-unificli#readme",
   "dependencies": {
     "async": "^2.6.0",
+    "bytes": "^3.0.0",
     "columnify": "^1.5.4",
     "minimist": "^1.2.0",
     "node-unifi": "git+https://github.com/jens-maus/node-unifi.git",

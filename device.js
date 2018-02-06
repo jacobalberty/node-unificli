@@ -1,5 +1,6 @@
 'use strict';
-const columnify = require('columnify')
+const bytes = require('bytes')
+    , columnify = require('columnify')
     , prettyMs = require('pretty-ms');
 
 var deps = { };
@@ -22,7 +23,9 @@ var colfuncs = {
                 output.push(`${dev['na-channel']} (5ghz)`);
         }
         return output.join(', ');
-    }
+    },
+    rxstat: function(dev) { return bytes(dev.rx_bytes) },
+    txstat: function(dev) { return bytes(dev.tx_bytes) }
 }
 
 var columns = {
@@ -34,6 +37,8 @@ var columns = {
         version: 'version'
     },
     'ugw,usw': {
+        'data down': 'txstat',
+        'data up': 'rxstat'
     },
     uap: {
         clients: 'num_sta',
