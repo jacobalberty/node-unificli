@@ -44,7 +44,7 @@ var columns = {
     }
 }
 
-function setPoeMode(called, args) {
+function listAccessDevices(called, args) {
     var controller = deps.controller;
     var config = deps.config;
 
@@ -82,6 +82,6 @@ function setPoeMode(called, args) {
 
 module.exports = {
     login: true,
-    func: setPoeMode,
+    func: listAccessDevices,
     deps: deps
 }
