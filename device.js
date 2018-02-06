@@ -72,7 +72,7 @@ function listAccessDevices(called, args) {
 
     var fcol = { };
     Object.assign(fcol, columns._, columns[coltype])
-    console.log(coltype);
+
     controller.getAccessDevices('default', function(error, data) {
         if (error)
             throw error;
