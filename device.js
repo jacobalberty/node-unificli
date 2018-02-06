@@ -1,32 +1,8 @@
 'use strict';
-const bytes = require('bytes')
-    , columnify = require('columnify')
-    , prettyMs = require('pretty-ms');
+const columnify = require('columnify')
+    , accessDevice = require('node-unifi-settings').accessDevice;
 
 var deps = { };
-
-var colfuncs = {
-    uptime: function (dev) { return prettyMs(dev.uptime*1000); },
-    channel: function (dev) {
-        var output = [ ];
-        if (dev.radio_table_stats) {
-            // Controller 5.7.x
-            for(key in dev.radio_table_stats) {
-                var radio = dev.radio_table_stats[key];
-                output.push(`${radio.channel} (${radio.radio})`);
-            }
-        } else {
-            // Works with controller 5.6.x
-            if (dev['ng-channel'])
-                output.push(`${dev['ng-channel']} (2.4ghz)`);
-            if (dev['na-channel'])
-                output.push(`${dev['na-channel']} (5ghz)`);
-        }
-        return output.join(', ');
-    },
-    rxstat: function(dev) { return bytes(dev.rx_bytes) },
-    txstat: function(dev) { return bytes(dev.tx_bytes) }
-}
 
 var columns = {
     _: {
@@ -78,24 +54,26 @@ function listAccessDevices(called, args) {
             throw error;
         var devices = data[0];
         var output = [ ];
+        var devObjs = [ ];
         for(key in devices) {
-            var dev = devices[key];
+            var dev = new accessDevice(devices[key]);
+
+            dev.human = (args.human !== 'false');
+
             if (filtype !== 'all') {
                 var types = filtype.split(',');
                 if (types.indexOf(dev.type) === -1)
                    continue;
             }
+
             var tmp = { };
             Object.keys(fcol).forEach(function(key, index) {
-                var value;
-                if (colfuncs[fcol[key]] !== undefined) {
-                    value = colfuncs[fcol[key]](dev);
-                } else {
-                    value = dev[fcol[key]];
+                if (dev[fcol[key]]) {
+                    tmp[key] = dev[fcol[key]];
                 }
-                tmp[key] = value;
             });
             output.push(tmp)
+
         }
         console.log(columnify(output));
     });
