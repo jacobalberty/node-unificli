@@ -10,7 +10,7 @@ const actions = {
     poe: require("./poe_mode")
 }
 
-var called = process.argv.splice(0, process.execArgv.length + 2).join(' ');
+var called = process.argv.splice(0, process.execArgv.length + 2).slice(-1)[0];
 var action = process.argv.splice(0, 1)[0];
 var argv = require('minimist')(process.argv);
 
