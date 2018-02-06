@@ -11,6 +11,7 @@ const actions = {
 
 var called = process.argv.splice(0, process.execArgv.length + 2).join(' ');
 var action = process.argv.splice(0, 1)[0];
+var argv = require('minimist')(process.argv);
 
 if (actions[action] === undefined) {
     console.log(`Supported actions: ${Object.keys(actions).join(', ')}`);
@@ -18,7 +19,7 @@ if (actions[action] === undefined) {
 }
 
 if (actions[action].login !== true) {
-    actions[action].func(called, process.argv);
+    actions[action].func(called, argv);
     return;
 }
 
@@ -50,5 +51,5 @@ controller.login(config.username, config.password, function(error) {
     if(actions[action].deps !== undefined) {
         Object.assign(actions[action].deps, { config: config, controller: controller });
     }
-    actions[action].func(called, process.argv);
+    actions[action].func(called, argv);
 });

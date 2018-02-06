@@ -7,6 +7,7 @@ function setPoeMode(called, args) {
     var controller = deps.controller;
     var config = deps.config;
 
+    args = args._; // We don't accept any options so discard them and only deal with the arguments
     if (args.length !== 3) {
         console.log (`usage: ${called} poe <switch mac> <switch port> <poe mode>`);
         return;
