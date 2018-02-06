@@ -6,7 +6,7 @@ const bytes = require('bytes')
 var deps = { };
 
 var colfuncs = {
-    uptime: function (dev) { return prettyMs(dev.uptime); },
+    uptime: function (dev) { return prettyMs(dev.uptime*1000); },
     channel: function (dev) {
         var output = [ ];
         if (dev.radio_table_stats) {
