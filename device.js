@@ -30,7 +30,7 @@ function listAccessDevices(called, args) {
     var config = deps.config;
 
     var type = 'all';
-    var coltype;
+    var coltype=type;
     if (args.type) {
         type = args.type;
         switch(type) {
@@ -45,7 +45,6 @@ function listAccessDevices(called, args) {
         }
     }
     var filtype = type;
-
     var fcol = { };
     Object.assign(fcol, columns._, columns[coltype])
 
