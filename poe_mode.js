@@ -6,15 +6,21 @@ var deps = { }
 function setPoeMode(called, args) {
     var controller = deps.controller;
     var config = deps.config;
+    var devCalled = (args.mac !== undefined);
 
-    args = args._; // We don't accept any options so discard them and only deal with the arguments
-    if (args.length !== 3) {
-        console.log (`usage: ${called} poe <switch mac> <switch port> <poe mode>`);
+    if (args._.length !== (devCalled ? 2 : 3)) {
+        if (devCalled) {
+            console.log (`usage: ${called} poe <switch port> <poe mode>`);
+        } else {
+            console.log (`usage: ${called} poe <switch mac> <switch port> <poe mode>`);
+        }
         return;
     }
-    var mac = args[0];
-    var port = args[1];
-    var mode = args[2];
+
+    var mac = devCalled ? args.mac : args._.splice(0, 1)[0];
+    var port = args._.splice(0, 1)[0];
+    var mode = args._.splice(0, 1)[0];
+
     controller.getAccessDevices('default', function(error, data) {
         if (error)
             throw error;
