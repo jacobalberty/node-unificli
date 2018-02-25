@@ -21,7 +21,7 @@ function setPoeMode(called, args) {
     var port = args._.splice(0, 1)[0];
     var mode = args._.splice(0, 1)[0];
 
-    controller.getAccessDevices('default', function(error, data) {
+    controller.getAccessDevices(config.site, function(error, data) {
         if (error)
             throw error;
         var ad = new accessDevice(data);
