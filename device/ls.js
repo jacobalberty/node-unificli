@@ -48,7 +48,7 @@ function listAccessDevices(called, args) {
     var fcol = { };
     Object.assign(fcol, columns._, columns[coltype])
 
-    controller.getAccessDevices('default', function(error, data) {
+    controller.getAccessDevices(config.site, function(error, data) {
         if (error)
             throw error;
         var devices = data[0];
