@@ -14,11 +14,13 @@ var called = process.argv.splice(0, process.execArgv.length + 2).slice(-1)[0];
 var action = process.argv.splice(0, 1)[0];
 var argv = require('minimist')(process.argv);
 
-if (actions[action] === undefined) {
-    console.log(`Supported actions: ${Object.keys(actions).join(', ')}`);
-    return;
-} else {
-    actions[action] = require(actions[action]);
+switch (typeof actions[action]) {
+    case 'undefined':
+        console.log(`Supported actions: ${Object.keys(actions).join(', ')}`);
+        return;
+    case 'string':
+        actions[action] = require(actions[action]);
+        break;
 }
 
 if (actions[action].login !== true) {
