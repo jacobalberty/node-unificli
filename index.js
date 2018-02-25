@@ -2,11 +2,11 @@
 
 const fs = require("fs")
     , os = require("os")
-    , unifi = require("node-unifi");
+    , unifi = require("node-unifiapi");
 
 const actions = {
     device: "./device",
-    setup: "./setup",
+    setup: require("./setup"),
     poe: "./poe_mode"
 }
 
@@ -42,19 +42,16 @@ if (filen === undefined) {
 }
 try {
     var config = JSON.parse(fs.readFileSync(filen, "utf-8"));
+    actions.setup.validate(config);
 }
 catch (err) {
     console.log(`Can't access or parse 'config.json'`);
     return;
 }
 
-var controller = new unifi.Controller(config.addr, config.port);
+var r = unifi(config.options);
 
-controller.login(config.username, config.password, function(error) {
-    if (error)
-        throw error;
-    if(actions[action].deps !== undefined) {
-        Object.assign(actions[action].deps, { config: config, controller: controller });
-    }
-    actions[action].func(called, argv);
-});
+if(actions[action].deps !== undefined) {
+    Object.assign(actions[action].deps, { config: config, unifi: r });
+}
+actions[action].func(called, argv);

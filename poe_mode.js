@@ -4,7 +4,7 @@ const accessDevice = require("node-unifi-settings").accessDevice;
 var deps = { }
 
 function setPoeMode(called, args) {
-    var controller = deps.controller;
+    var unifi = deps.unifi;
     var config = deps.config;
     var devCalled = (args.mac !== undefined);
 
@@ -21,22 +21,14 @@ function setPoeMode(called, args) {
     var port = args._.splice(0, 1)[0];
     var mode = args._.splice(0, 1)[0];
 
-    controller.getAccessDevices(config.site, function(error, data) {
-        if (error)
-            throw error;
-        var ad = new accessDevice(data);
-        var portObj = ad.ports(port)
-        portObj.poe_mode = mode;
-
-        updateAccessDevice(controller, config.site, ad);
-    }, mac);
-}
-
-function updateAccessDevice(controller, sites, accessDevice) {
-    var changes = accessDevice.getChanges();
-    if (Object.keys(changes).length > 0) {
-        controller.setDeviceSettingsBase(sites, accessDevice.id, changes);
-    }
+    unifi.list_aps(mac, config.site)
+        .then(data => {
+            var ad = new accessDevice(data.data);
+            var portObj = ad.ports(port)
+            portObj.poe_mode = mode;
+            unifi.netsite('/rest/device/' + ad.id, ad.getChanges(), {}, 'PUT', config.site);
+        })
+        .catch(err => {throw err});
 }
 
 module.exports = {

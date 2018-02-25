@@ -28,7 +28,7 @@
     "async": "^2.6.0",
     "columnify": "^1.5.4",
     "minimist": "^1.2.0",
-    "node-unifi": "git+https://github.com/jens-maus/node-unifi.git",
-    "node-unifi-settings": "git+https://github.com/jacobalberty/node-unifi-settings.git"
+    "node-unifi-settings": "git+https://github.com/jacobalberty/node-unifi-settings.git",
+    "node-unifiapi": "0.0.49"
   }
 }

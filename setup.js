@@ -11,13 +11,18 @@ function setup(called, args) {
         oldConf = JSON.parse(fs.readFileSync(filen, "utf-8"));
     } catch (err) { // just discard errors and make a blank object because we want to make a new file anyway
         oldConf = {
-            username: 'admin',
-            password: 'changeme',
-            addr: 'unifi',
-            port: '8443',
+            method: 'unifi',
+            options: {
+                baseUrl: 'https://unifi:8443',
+                username: 'admin',
+                password: 'changeme',
+            },
             site: 'default'
         };
     }
+
+    validate(oldConf, false);
+
     var readline = require('readline');
 
     var muteableStdout = new Writable({
@@ -38,10 +43,10 @@ function setup(called, args) {
 
     async.series([
         (callback) => {
-            rl.question(`Username (${oldConf.username}): `, (username) => {
+            rl.question(`Username (${oldConf.options.username}): `, (username) => {
                 callback();
                 if (username !== '')
-                    oldConf.username = username;
+                    oldConf.options.username = username;
             });
         },
         (callback) => {
@@ -51,21 +56,14 @@ function setup(called, args) {
                 console.log();
                 muteableStdout.muted = false;
                 if (password !== '')
-                    oldConf.password = password;
+                    oldConf.options.password = password;
                 callback();
             });
         },
         (callback) => {
-            rl.question(`Address (${oldConf.addr}): `, (addr) => {
-                if (addr !== '')
-                    oldConf.addr = addr;
-                callback();
-            });
-        },
-        (callback) => {
-            rl.question(`Port (${oldConf.port}): `, (port) => {
-                if (port !== '')
-                    oldConf.port = port;
+            rl.question(`BaseUrl (${oldConf.options.baseUrl}): `, (baseUrl) => {
+                if (baseUrl !== '')
+                    oldConf.options.baseUrl = baseUrl;
                 callback();
             });
         },
@@ -81,5 +79,22 @@ function setup(called, args) {
         rl.close();
     });
 }
+function validate(conf, warn = true) {
+    if (conf.options === undefined) {
+        if (warn) {
+            console.log('Using old configuration format, please run `unificli setup` to update your configuration format');
+        }
+        conf.method = 'unifi';
+        conf.options = {
+            baseUrl: `https://${conf.addr}:${conf.port}`,
+            username: conf.username,
+            password: conf.password
+        }
+        delete conf.addr;
+        delete conf.port;
+        delete conf.username;
+        delete conf.password;
+    }
+}
 
-module.exports = { func: setup };
+module.exports = { func: setup, validate: validate };
