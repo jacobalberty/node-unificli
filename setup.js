@@ -77,7 +77,7 @@ function setup(called, args) {
             });
         },
     ], () => {
-        fs.writeFileSync(filen, JSON.stringify(oldConf), 'utf-8')
+        fs.writeFileSync(filen, JSON.stringify(oldConf, null, ' '), 'utf-8')
         rl.close();
     });
 }
